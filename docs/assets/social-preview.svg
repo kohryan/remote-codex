@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Remote Codex — Codex di komputer. Kendali dari HP.</title>
+  <desc id="desc">Project sharing card using the Remote Codex Android icon, mint lettering, and a phone-to-computer connection diagram.</desc>
+  <defs>
+    <linearGradient id="backdrop" x2="1" y2="1">
+      <stop stop-color="#0C1118"/>
+      <stop offset="1" stop-color="#152A2B"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#6EE7C7" stroke-opacity=".045"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="640" fill="url(#backdrop)"/>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+  <path d="M0 638H1280" stroke="#6EE7C7" stroke-width="4"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <g transform="translate(72 66) scale(1.1)">
+      <rect width="108" height="108" rx="25" fill="#0C1118" stroke="#2C4748"/>
+      <path d="M27,37l17,17l-17,17M55,71h26M64,27c10,0 17,7 17,17" fill="none" stroke="#6EE7C7" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="223" y="101" fill="#6EE7C7" font-size="15" font-weight="600" letter-spacing="4">YOUR COMPUTER. YOUR CODEX.</text>
+    <text x="218" y="167" fill="#EEF4F8" font-size="62" font-weight="700" letter-spacing="-2">Remote Codex</text>
+    <text x="72" y="276" fill="#EEF4F8" font-size="39" font-weight="600" letter-spacing="-.7">Codex di komputer.</text>
+    <text x="72" y="329" fill="#6EE7C7" font-size="39" font-weight="600" letter-spacing="-.7">Kendali dari HP.</text>
+    <text x="72" y="388" fill="#A4B6C7" font-size="22">Chat, kirim arahan, dan tinjau persetujuan.</text>
+    <text x="72" y="422" fill="#A4B6C7" font-size="22">File dan proses tetap di komputermu.</text>
+    <g transform="translate(822 244)">
+      <rect x="0" y="0" width="118" height="196" rx="22" fill="#101B24" stroke="#547874" stroke-width="2"/>
+      <path d="M43 17H75" stroke="#547874" stroke-width="5" stroke-linecap="round"/>
+      <rect x="16" y="48" width="86" height="33" rx="9" fill="#24483F"/>
+      <path d="M29 64H75" stroke="#6EE7C7" stroke-width="4" stroke-linecap="round"/>
+      <rect x="16" y="96" width="86" height="59" rx="9" fill="#1D2E3B"/>
+      <path d="M29 113H85M29 128H69M29 143H79" stroke="#8EA9B8" stroke-width="3" stroke-linecap="round"/>
+      <text x="59" y="231" fill="#A4B6C7" font-size="15" text-anchor="middle">ANDROID</text>
+      <path d="M132 97H176" stroke="#6EE7C7" stroke-width="2" stroke-dasharray="5 6"/>
+      <circle cx="156" cy="97" r="5" fill="#6EE7C7"/>
+      <rect x="190" y="37" width="155" height="113" rx="10" fill="#101B24" stroke="#547874" stroke-width="2"/>
+      <path d="M176 162H359L346 175H190Z" fill="#233D3D"/>
+      <path d="M214 63L228 77L214 91M240 91H265" fill="none" stroke="#6EE7C7" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M214 113H284M214 127H308" stroke="#547874" stroke-width="3" stroke-linecap="round"/>
+      <text x="267" y="231" fill="#A4B6C7" font-size="15" text-anchor="middle">LOCAL CODEX</text>
+    </g>
+    <path d="M72 511H1208" stroke="#2B4147"/>
+    <rect x="72" y="541" width="134" height="34" rx="17" fill="#1C3531"/>
+    <text x="139" y="564" fill="#6EE7C7" font-size="14" font-weight="600" text-anchor="middle">ANDROID 8+</text>
+    <rect x="218" y="541" width="181" height="34" rx="17" fill="#1C3531"/>
+    <text x="308" y="564" fill="#6EE7C7" font-size="14" font-weight="600" text-anchor="middle">LAN + TAILSCALE</text>
+    <text x="1208" y="565" fill="#A4B6C7" font-size="18" text-anchor="end">github.com/kohryan/remote-codex</text>
+  </g>
+</svg>

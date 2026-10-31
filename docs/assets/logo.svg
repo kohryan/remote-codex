@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108" role="img" aria-labelledby="title desc">
+  <title id="title">Remote Codex</title>
+  <desc id="desc">A mint terminal prompt and connection arc on a dark rounded square, matching the Android app icon.</desc>
+  <rect width="108" height="108" rx="25" fill="#0C1118"/>
+  <path d="M27,37l17,17l-17,17M55,71h26M64,27c10,0 17,7 17,17" fill="none" stroke="#6EE7C7" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

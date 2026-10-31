@@ -1,90 +1,213 @@
-# Remote Codex
+<p align="center">
+  <img src="docs/assets/logo.svg" width="112" height="112" alt="Logo Remote Codex: simbol terminal hijau mint di atas latar gelap" />
+</p>
 
-APK Android untuk mengobrol dengan Codex yang berjalan di komputer sendiri. HP menjadi remote; file, terminal, dan proses agent tetap di komputer.
+<h1 align="center">Remote Codex</h1>
 
-## Yang tersedia
+<p align="center">
+  <strong>Codex di komputer. Kendali dari HP.</strong><br />
+  Buat chat, kirim arahan, dan tinjau persetujuan dari Android.<br />
+  File dan proses agent tetap berjalan di komputermu.
+</p>
 
-- Buat chat baru dengan memilih folder repo di komputer.
-- Baca riwayat chat lokal, cari chat, dan muat pesan sebelumnya.
-- Kirim arahan, baca balasan bertahap, dan hentikan turn yang aktif.
-- Tinjau perintah/perubahan file sebelum menyetujui **sekali**, atau tolak.
-- Jawab pertanyaan agent dari HP.
-- Koneksi Wi-Fi lokal atau VPN privat seperti Tailscale; HTTPS untuk host publik.
+<p align="center">
+  <a href="https://github.com/kohryan/remote-codex/releases/latest"><img src="https://img.shields.io/github/v/release/kohryan/remote-codex?style=flat-square&amp;label=APK&amp;color=6ee7c7&amp;labelColor=17202a" alt="Rilis APK terbaru" /></a>
+  <a href="https://github.com/kohryan/remote-codex/actions/workflows/check.yml"><img src="https://github.com/kohryan/remote-codex/actions/workflows/check.yml/badge.svg" alt="Status pengujian dan build APK" /></a>
+  <img src="https://img.shields.io/badge/Android-8.0%2B-6ee7c7?style=flat-square&amp;labelColor=17202a" alt="Android 8.0 atau lebih baru" />
+  <img src="https://img.shields.io/badge/Node.js-22%2B-6ee7c7?style=flat-square&amp;labelColor=17202a" alt="Node.js 22 atau lebih baru" />
+</p>
 
-Native Android (Java + platform UI), Node.js built-ins, tanpa framework UI, dependency npm, WebView, atau API key baru. Bridge menjalankan Codex CLI dengan login Codex yang sudah ada.
+<p align="center">
+  <a href="https://github.com/kohryan/remote-codex/releases/latest/download/remote-codex.apk"><strong>⬇ Unduh APK</strong></a>
+  &nbsp;·&nbsp; <a href="#mulai">Mulai cepat</a>
+  &nbsp;·&nbsp; <a href="#jarak-jauh">Akses jarak jauh</a>
+  &nbsp;·&nbsp; <a href="https://github.com/kohryan/remote-codex/issues">Laporkan masalah</a>
+</p>
 
-## Batas integrasi desktop
+---
 
-Bridge otomatis memilih:
+Remote Codex adalah klien Android komunitas untuk Codex lokal. Aplikasi native Java terhubung ke bridge Node.js di komputer, lalu bridge berkomunikasi dengan Codex App Server menggunakan login Codex yang sudah ada. Tidak perlu API key baru atau dependency npm untuk menjalankan bridge; akses model tetap mengikuti akun Codex kamu.
 
-| Mode | Perilaku |
-| --- | --- |
-| `shared` | Jika control socket Codex tersedia, gunakan `codex app-server proxy` ke proses yang sama. |
-| `standalone` | Jalankan `codex app-server` dengan akun dan riwayat lokal yang sama. Chat baru milik bridge dapat dilanjutkan. Pesan pertama ke chat desktop membuat **fork/salinan** beserta konteksnya; tidak menjalankan turn kedua pada riwayat desktop yang sama. |
+> **Tentang chat desktop:** pada mode `standalone`, pesan pertama ke chat desktop membuat **salinan dengan konteks percakapan**. Sinkronisasi langsung dengan chat desktop aktif belum tersedia pada mode ini. [Lihat cara kerja mode koneksi](#mode-koneksi).
 
-Instalasi desktop yang dipakai saat pengembangan belum menyediakan control socket. Karena itu **sinkronisasi langsung ke chat desktop yang sedang aktif belum tersedia**. Membuka riwayat desktop dari HP bersifat baca; mengirim pesan melanjutkan salinannya. Jangan menjalankan chat milik bridge di proses desktop lain secara bersamaan.
+## ✨ Dari HP, kamu bisa…
 
-Protokol app-server masih eksperimental dan dapat berubah mengikuti versi Codex. Versi yang diverifikasi: `codex-cli 0.166.0-alpha.5.1`. [Dokumentasi resmi Codex App Server](https://learn.chatgpt.com/docs/app-server).
+| | Fitur | Yang tersedia |
+| :---: | --- | --- |
+| 💬 | **Mulai percakapan** | Buat chat baru dan pilih folder repo di komputer. |
+| 🗂️ | **Buka riwayat** | Cari chat lokal dan muat percakapan sebelumnya. |
+| ⚡ | **Arahkan pekerjaan** | Kirim pesan dan baca balasan bertahap. |
+| ✋ | **Tinjau persetujuan** | Baca detail perintah atau perubahan file, lalu setujui sekali atau tolak. |
+| 📝 | **Jawab pertanyaan** | Balas permintaan input dari agent. |
+| ⏹️ | **Hentikan proses** | Interupsi turn aktif pada chat yang dikendalikan bridge. |
 
-## Jalankan di komputer
+## 🧭 Cara kerjanya
 
-Butuh Node.js 22+, Codex CLI yang sudah login (`codex login` bila diperlukan), dan komputer yang tetap menyala.
+```mermaid
+flowchart LR
+    phone["📱 Remote Codex · Android"]
+    subgraph computer["Komputer kamu"]
+        bridge["Bridge · port 8787"] <--> codex["Codex App Server"]
+        codex <--> repo["Repo & terminal"]
+    end
+    phone <-->|Wi-Fi / Tailscale| bridge
+    classDef app fill:#0C1118,stroke:#6EE7C7,color:#EEF4F8
+    classDef local fill:#17202A,stroke:#547874,color:#EEF4F8
+    class phone app
+    class bridge,codex,repo local
+```
+
+HP mengirim arahan dan menampilkan hasil. Agent membaca file, mengedit kode, dan menjalankan tool di komputer. Saat memakai Tailscale, HP dan komputer dapat berada di lokasi berbeda.
+
+<a id="mulai"></a>
+
+## 🚀 Mulai dalam 3 langkah
+
+**Siapkan:** komputer dengan Node.js 22+, Git, dan Codex CLI yang sudah login; HP Android 8.0+; serta koneksi Wi-Fi yang sama atau Tailscale. Build bridge dan integrasi lokal diverifikasi di macOS; sistem operasi host lain belum diuji.
+
+### 1. Jalankan bridge di komputer
+
+Jika belum login ke Codex, jalankan `codex login` terlebih dahulu.
 
 ```sh
 git clone https://github.com/kohryan/remote-codex.git
 cd remote-codex
-chmod +x start.sh
 ./start.sh
 ```
 
-`start.sh` membuka port 8787 untuk koneksi LAN. Terminal menampilkan alamat IPv4 yang dapat dimasukkan ke HP. Biarkan terminal tersebut berjalan. Untuk loopback saja, gunakan `npm start`.
+Terminal menampilkan alamat komputer dan lokasi token pairing. `start.sh` menerima koneksi jaringan pada port `8787`. Biarkan proses bridge berjalan.
 
-Token pairing dibuat otomatis di `.private/token`, dengan izin file `0600`. Buka file itu di komputer dan salin nilainya ke aplikasi Android. Token ini memberikan kendali atas Codex dalam workspace yang diizinkan; perlakukan sebagai kata sandi. Token tidak masuk Git, APK, atau log bridge.
-
-Variabel opsional:
-
-| Variabel | Default |
-| --- | --- |
-| `REMOTE_CODEX_ROOT` | Direktori induk repo `remote-codex`; hanya folder dalam root ini yang bisa dipilih/dibaca melalui bridge. |
-| `REMOTE_CODEX_HOST` | `127.0.0.1` untuk `npm start`; `0.0.0.0` untuk `start.sh`. |
-| `PORT` | `8787` |
-| `CODEX_BIN` | `codex` pada PATH |
-| `REMOTE_CODEX_SOCKET` | `$CODEX_HOME/app-server-control/app-server-control.sock` atau path setara dalam `~/.codex`. |
-
-Contoh:
+Secara default, folder kerja yang dapat dipilih adalah subfolder di direktori induk `remote-codex`. Untuk memakai direktori repo sendiri:
 
 ```sh
 REMOTE_CODEX_ROOT="$HOME/Projects" ./start.sh
 ```
 
-Bridge tidak mengubah konfigurasi global Codex. Chat baru/fork memakai sandbox `workspace-write`, reviewer pengguna, dan kebijakan `on-request`. Batas root pada API mengatur folder kerja/riwayat yang bisa dipilih, bukan sandbox OS tambahan; eksekusi agent tetap mengikuti sandbox Codex dan izin yang disetujui pengguna.
+Direktori tersebut harus sudah ada. Jika bridge sebelumnya masih berjalan, hentikan dulu dengan `Ctrl+C`, lalu jalankan kembali dengan pengaturan baru.
 
-Untuk mencabut pairing, hentikan bridge, hapus `.private/token`, lalu jalankan bridge dan pair ulang. `.private/state.json` menyimpan ID chat yang dikelola bridge serta pasangan fork desktop; simpan file ini untuk melanjutkan chat remote setelah restart.
+### 2. Pasang APK di HP
 
-## Pasang di Android
+Unduh **[remote-codex.apk dari rilis terbaru](https://github.com/kohryan/remote-codex/releases/latest/download/remote-codex.apk)**, buka file-nya di Android, lalu izinkan instalasi dari sumber yang kamu gunakan.
 
-1. Salin `remote-codex.apk` ke HP Android 8.0 atau lebih baru.
-2. Buka APK dan izinkan instalasi dari sumber yang dipakai.
-3. Jalankan **Remote Codex**.
-4. Isi alamat komputer, misalnya `http://192.168.1.10:8787`, dan token pairing.
-5. Tekan **Hubungkan**, lalu **Chat baru** untuk memilih repo.
+<details>
+<summary>Opsional: verifikasi checksum unduhan</summary>
 
-Untuk akses di luar Wi-Fi, hubungkan komputer dan HP ke jaringan Tailscale yang sama lalu pakai IP Tailscale komputer. Alternatifnya gunakan reverse proxy HTTPS berautentikasi token ke bridge loopback. Jangan membuka port HTTP 8787 langsung ke internet. HTTP LAN mengirim token dan isi chat tanpa TLS; gunakan hanya jaringan yang dipercaya atau koneksi VPN terenkripsi.
-
-Token di HP dienkripsi AES-GCM dengan kunci Android Keystore. Aplikasi menolak redirect dan alamat HTTP publik. Persetujuan hanya untuk satu tindakan; tidak ada tombol otomatis menyetujui semua.
-
-## Build APK
-
-Butuh JDK 17, Android SDK Platform 35, Build Tools 35.0.0, dan platform-tools. Contoh setelah Android command-line tools terpasang:
+Unduh juga `remote-codex.apk.sha256` dari [halaman rilis](https://github.com/kohryan/remote-codex/releases/latest). Letakkan kedua file dalam folder yang sama, lalu jalankan di komputer:
 
 ```sh
+# macOS
+shasum -a 256 -c remote-codex.apk.sha256
+
+# Linux
+sha256sum -c remote-codex.apk.sha256
+```
+
+</details>
+
+### 3. Hubungkan dan mulai chat
+
+Di aplikasi **Remote Codex → Koneksi**, isi:
+
+| Isian | Nilai |
+| --- | --- |
+| **Alamat komputer** | `http://IP_KOMPUTER:8787` — ganti `IP_KOMPUTER` dengan IP LAN atau IP Tailscale komputer. |
+| **Token pairing** | Isi file `.private/token` di folder repo pada komputer. |
+
+Buka file token di komputer atau tampilkan dari direktori repo:
+
+```sh
+cat .private/token
+```
+
+Tempel token ke aplikasi, tekan **Hubungkan → Chat baru**, lalu pilih repo. Misalnya, kirim: *“Cek repo ini dan jelaskan strukturnya.”*
+
+**Simpan token untuk dirimu sendiri.** Jangan masukkan nilainya ke issue, screenshot, atau pesan publik.
+
+<a id="jarak-jauh"></a>
+
+## 🌍 Beda lokasi? Pakai Tailscale
+
+1. Instal [Tailscale di komputer](https://tailscale.com/download) dan [di Android](https://tailscale.com/download/android).
+2. Login dengan **akun yang sama** dan aktifkan Tailscale di kedua perangkat. Selesaikan izin VPN atau system extension yang diminta sistem.
+3. Salin **IP Tailscale komputer**, biasanya berbentuk `100.x.x.x`, dari daftar perangkat Tailscale.
+4. Di **Remote Codex → Koneksi**, gunakan `http://IP_TAILSCALE_KOMPUTER:8787` dengan IP tersebut. Token pairing tetap sama.
+5. Coba matikan Wi-Fi HP dan gunakan data seluler, lalu kirim chat untuk menguji koneksi jarak jauh.
+
+Komputer harus tetap menyala, terhubung internet, dan menjalankan bridge. Saat HP ditutup, agent di komputer tetap dapat bekerja; balasan akan dimuat ketika aplikasi dibuka kembali.
+
+Jika Mac tidak bisa diakses, periksa **Tailscale → Settings → Allow incoming connections**. [Panduan koneksi resmi Tailscale](https://tailscale.com/docs/how-to/connect-to-devices).
+
+<a id="mode-koneksi"></a>
+
+## 🔌 Mode koneksi Codex
+
+Bridge memilih mode berdasarkan ketersediaan control socket lokal:
+
+| Mode | Perilaku | Status verifikasi |
+| --- | --- | --- |
+| **`standalone`** | Menjalankan `codex app-server` dengan akun dan riwayat lokal yang sama. Chat baru milik bridge bisa dilanjutkan. Chat desktop disalin saat pesan pertama dikirim, beserta konteksnya. | Chat baru dan fork telah diuji dengan Codex lokal. |
+| **`shared`** | Menggunakan `codex app-server proxy` untuk terhubung ke proses yang menyediakan control socket. | Diuji menggunakan mock protokol; belum diuji pada desktop dengan control socket aktif. |
+
+Instalasi desktop yang dipakai saat pengembangan belum menyediakan control socket bersama. Hindari membuka dan menjalankan chat milik bridge pada proses Codex lain secara bersamaan.
+
+App Server masih eksperimental dan protokolnya dapat berubah. Versi yang diverifikasi: **`codex-cli 0.166.0-alpha.5.1`**. [Dokumentasi Codex App Server](https://learn.chatgpt.com/docs/app-server).
+
+## 🔐 Akses dan penyimpanan token
+
+- Setiap permintaan ke bridge memerlukan token. Token dibuat otomatis di `.private/token` dengan izin file `0600` dan tidak ditanam di APK atau ditulis ke log bridge.
+- Android menyimpan token terenkripsi **AES-GCM melalui Android Keystore**. Data pairing dikecualikan dari backup dan transfer perangkat.
+- Chat baru dan fork memakai sandbox **`workspace-write`**, reviewer pengguna, serta kebijakan **`on-request`**. Persetujuan dari HP berlaku sekali per tindakan.
+- `REMOTE_CODEX_ROOT` membatasi folder kerja dan riwayat yang dapat diakses melalui API. Batas ini bukan sandbox OS tambahan; eksekusi agent mengikuti sandbox Codex dan izin pengguna.
+- Aplikasi menolak redirect dan alamat HTTP publik. **HTTP LAN tidak memakai TLS:** gunakan jaringan tepercaya atau VPN terenkripsi. Jangan meneruskan port HTTP `8787` langsung ke internet. Jika memakai host publik, gunakan reverse proxy HTTPS menuju bridge loopback.
+
+Untuk mencabut pairing: hentikan bridge, hapus `.private/token`, jalankan kembali, lalu pair ulang. Simpan `.private/state.json` agar bridge mengenali chat remote dan pasangan fork setelah restart.
+
+## ⚙️ Konfigurasi
+
+| Variabel | Default / fungsi |
+| --- | --- |
+| `REMOTE_CODEX_ROOT` | Direktori induk repo `remote-codex`; menentukan folder kerja dan riwayat yang bisa diakses melalui bridge. |
+| `REMOTE_CODEX_HOST` | `0.0.0.0` saat memakai `start.sh`; `127.0.0.1` saat memakai `npm start`. |
+| `PORT` | `8787` |
+| `CODEX_BIN` | `codex` pada `PATH` |
+| `CODEX_HOME` | Dipakai oleh Codex CLI; bila disetel, juga menjadi direktori dasar control socket. |
+| `REMOTE_CODEX_SOCKET` | `$CODEX_HOME/app-server-control/app-server-control.sock`, atau path setara dalam `~/.codex` jika `CODEX_HOME` tidak disetel. |
+
+Untuk koneksi loopback saja, gunakan `npm start`. Bridge tidak mengubah konfigurasi global Codex.
+
+## 🛠️ Build dan pengembangan
+
+Bridge menggunakan modul bawaan Node.js. UI Android memakai Java dan komponen platform, tanpa WebView atau dependency UI tambahan.
+
+**Toolchain Android:** JDK 17 · Android SDK Platform 35 · Build Tools 35.0.0 · Gradle 8.11.1 · Android Gradle Plugin 8.9.2.
+
+```sh
+# Setelah Android command-line tools terpasang
 sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'platform-tools'
 npm run build:android
 ```
 
-Hasil: `dist/remote-codex.apk` (debug APK bertanda tangan, untuk instalasi pribadi). Atur `ANDROID_HOME` bila SDK ada di lokasi lain. Untuk distribusi produksi, gunakan signing key rilis milik sendiri; jangan commit key. Wrapper Gradle dipin ke 8.11.1, Android Gradle Plugin 8.9.2.
+Hasil build tersedia di **`dist/remote-codex.apk`**. Atur `ANDROID_HOME` jika SDK berada di lokasi lain; pada macOS, skrip memakai `$HOME/Library/Android/sdk` secara default.
 
-## Verifikasi
+APK v0.1.0 dan hasil build di atas adalah **debug APK bertanda tangan untuk penggunaan pribadi**, belum rilis Play Store. Gunakan signing key rilis sendiri untuk distribusi produksi dan jangan commit key. APK dari mesin atau CI berbeda bisa memakai debug key berbeda, sehingga tidak selalu bisa dipasang sebagai pembaruan tanpa uninstall.
+
+<details>
+<summary>Struktur repo</summary>
+
+```text
+remote-codex/
+├── android/           # Aplikasi Android native
+├── server/            # HTTP bridge dan klien RPC Codex
+├── scripts/           # Skrip build APK
+├── test/              # Pengujian bridge
+├── docs/assets/       # Logo dan aset identitas proyek
+├── .github/workflows/ # Pengujian dan build otomatis
+└── start.sh           # Jalankan bridge untuk LAN / Tailscale
+```
+
+</details>
+
+### Menjalankan pemeriksaan
 
 ```sh
 npm test
@@ -92,14 +215,35 @@ cd android
 ./gradlew assembleDebug lintDebug
 ```
 
-Test bridge memeriksa autentikasi, penolakan Origin, path/symlink di luar root, fork desktop, deduplikasi pesan, mode shared, stream, dan persetujuan. Uji nyata telah membuat chat lewat bridge dan menerima balasan `REMOTE_CODEX_OK` dari Codex lokal, lalu melanjutkan fork dengan konteks yang sama dan menerima `FORK_OK`.
+Delapan test bridge mencakup autentikasi, penolakan `Origin`, batas path dan symlink, fork desktop, deduplikasi pesan, mode shared, stream, serta persetujuan. Uji integrasi lokal juga menerima `REMOTE_CODEX_OK` dari chat baru dan `FORK_OK` dari lanjutan hasil fork.
 
-## Batas versi awal
+## 💡 Bantuan cepat
 
-- Polling 1,2 detik saat layar chat terbuka; belum ada push notification atau foreground service Android. Agent di komputer tetap berjalan ketika HP ditutup.
-- Pesan teks dan aktivitas dasar; lampiran, rich Markdown, review diff interaktif, elicitation MCP, dan izin sandbox khusus belum tersedia. Izin khusus ditolak, elicitation dibatalkan; gunakan desktop untuk alur tersebut.
-- Tampilan approval menampilkan detail JSON termasuk perintah/diff bila tersedia.
-- Tidak mengirim ulang pesan secara otomatis. Jika koneksi putus saat mengirim, periksa riwayat sebelum mencoba lagi. Deduplikasi berlaku selama proses bridge yang sama; setelah restart, periksa riwayat terlebih dahulu.
-- Bila proses Codex terputus, mulai ulang bridge. Proses desktop tidak dihentikan oleh bridge.
-- Mode `shared` diuji dengan mock protokol; belum diuji terhadap desktop dengan control socket aktif.
-- Pengujian pada HP fisik masih perlu dilakukan setelah APK dipasang.
+| Kendala | Yang perlu diperiksa |
+| --- | --- |
+| **Tidak bisa terhubung** | Bridge masih berjalan, alamat komputer benar, dan port `8787` dapat dijangkau. Untuk beda lokasi, aktifkan Tailscale di kedua perangkat. |
+| **Token salah** | Salin ulang isi `.private/token`. Jika token diganti, perbarui juga pada aplikasi Android. |
+| **Repo tidak muncul** | Pastikan folder berada di bawah `REMOTE_CODEX_ROOT` dan direktori itu sudah ada. |
+| **Muncul chat salinan** | Ini perilaku mode `standalone` saat melanjutkan chat dari desktop. |
+| **Pesan belum terkonfirmasi** | Periksa riwayat sebelum mengirim ulang. Bridge tidak mengirim ulang otomatis; deduplikasi berlaku selama proses bridge yang sama. |
+| **Koneksi Codex terputus** | Mulai ulang bridge. Bridge tidak menghentikan proses desktop. |
+
+### Batas versi awal
+
+- Pembaruan chat memakai polling setiap 1,2 detik saat layar chat terbuka; belum ada push notification atau foreground service Android.
+- Mendukung teks dan aktivitas dasar. Lampiran, rich Markdown, serta review diff interaktif belum tersedia. Approval menampilkan detail JSON termasuk perintah/diff bila tersedia.
+- Permintaan izin sandbox khusus ditolak dan elicitation MCP dibatalkan. Gunakan desktop untuk alur tersebut.
+- Mode `shared` belum diverifikasi pada proses desktop nyata. Pengujian otomatis belum mencakup UI di perangkat fisik.
+
+## 🤝 Ikut memperbaiki
+
+Temukan bug atau punya ide? Buka [issue](https://github.com/kohryan/remote-codex/issues) dengan versi APK/Codex, versi Android, dan langkah reproduksi. Sertakan pesan error yang relevan setelah menghapus token dan informasi privat.
+
+Untuk perubahan kode, jelaskan perilaku sebelum/sesudah dan hasil pemeriksaan pada pull request. Untuk masalah yang berpotensi membuka akses tanpa izin, gunakan kontak yang dicantumkan maintainer di [profil GitHub](https://github.com/kohryan); jangan publikasikan token atau detail eksploitasi aktif dalam issue.
+
+---
+
+<p align="center">
+  Dibuat oleh <a href="https://github.com/kohryan">@kohryan</a> · Klien komunitas, tidak berafiliasi dengan OpenAI.<br />
+  <sub>Logo README memakai simbol terminal yang sama dengan ikon APK. <a href="docs/assets/">Aset logo & preview tautan</a>.</sub>
+</p>
